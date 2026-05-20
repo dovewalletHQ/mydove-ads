@@ -30,7 +30,7 @@ env:
     PORT: "3000"
 
 ssh:
-  user: root
+  user: tiny-dove
 
 builder:
   arch: amd64
