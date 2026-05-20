@@ -50,7 +50,7 @@ jobs:
 
       # ── 6. Reboot kamal-proxy (ensures latest version) ───────
       - name: Reboot kamal-proxy
-        run: kamal proxy reboot
+        run: kamal proxy reboot --confirmed
 
       # ── 7. Deploy with Kamal ───────────────────────────────────
       - name: Deploy
