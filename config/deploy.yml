@@ -1,0 +1,38 @@
+service: dovewallethq-marketing
+
+image: dovewallet-marketing
+
+
+registry:
+  server: ghcr.io
+  username: dovewalletHQ
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+servers:
+  web:
+    hosts:
+      - 146.190.33.205
+
+
+proxy:
+  ssl: true
+  host: marketing.dovewallet.co
+  app_port: 3000
+  healthcheck:
+    interval: 3
+    path: /health
+    timeout: 3
+
+env:
+  clear:
+    NODE_ENV: production
+    PORT: "3000"
+
+ssh:
+  user: root
+
+builder:
+  arch: amd64
+
+retain_containers: 3

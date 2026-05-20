@@ -32,15 +32,15 @@ router.get("/go", (req: Request, res: Response): void => {
   setNoCacheHeaders(res);
 
   // Per-request URL overrides (useful for campaign-specific links)
-  const ios      = (req.query.ios      as string | undefined) ?? appLinks.ios;
-  const android  = (req.query.android  as string | undefined) ?? appLinks.android;
+  const ios = (req.query.ios as string | undefined) ?? appLinks.ios;
+  const android = (req.query.android as string | undefined) ?? appLinks.android;
   const fallback = (req.query.fallback as string | undefined) ?? appLinks.fallback;
 
   // Validate override URLs to prevent open redirect abuse
   const allowedHosts = [
     "apps.apple.com",
     "https://play.google.com/store/apps/details?id=com.mydove.app&pcampaignid=web_share",
-    "https://www.dovewallet.co/", // add your actual domain
+    "https://www.dovewallet.co/",
   ];
 
   function isSafeUrl(url: string): boolean {
@@ -52,14 +52,14 @@ router.get("/go", (req: Request, res: Response): void => {
     }
   }
 
-  const resolvedIos      = isSafeUrl(ios)      ? ios      : appLinks.ios;
-  const resolvedAndroid  = isSafeUrl(android)  ? android  : appLinks.android;
+  const resolvedIos = isSafeUrl(ios) ? ios : appLinks.ios;
+  const resolvedAndroid = isSafeUrl(android) ? android : appLinks.android;
   const resolvedFallback = isSafeUrl(fallback) ? fallback : appLinks.fallback;
 
   const platform = detectPlatform(req);
 
   const destinations: Record<typeof platform, string> = {
-    ios:     resolvedIos,
+    ios: resolvedIos,
     android: resolvedAndroid,
     unknown: resolvedFallback,
   };
@@ -78,12 +78,35 @@ router.get("/go", (req: Request, res: Response): void => {
 router.get("/go/debug", (req: Request, res: Response): void => {
   const platform = detectPlatform(req);
   res.json({
-    userAgent:  req.headers["user-agent"] ?? null,
+    userAgent: req.headers["user-agent"] ?? null,
     platform,
     secChUaPlatform: req.headers["sec-ch-ua-platform"] ?? null,
-    secChUaMobile:   req.headers["sec-ch-ua-mobile"]   ?? null,
-    timestamp:  new Date().toISOString(),
+    secChUaMobile: req.headers["sec-ch-ua-mobile"] ?? null,
+    timestamp: new Date().toISOString(),
   });
+});
+
+
+/**
+ * GET /health
+ * Health check endpoint for load balancers and monitoring.
+ */
+router.get("/health", async (req: Request, res: Response) => {
+  try {
+    return res.status(200).json({
+      status: "ok",
+      message: "Server is running",
+      timestamp: new Date().toISOString(),
+      service: "smartlink-router",
+    });
+  } catch (error) {
+    console.error("[Health] Error:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Server is unhealthy",
+      timestamp: new Date().toISOString(),
+    });
+  }
 });
 
 export default router;
