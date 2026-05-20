@@ -1,6 +1,6 @@
 service: dovewallethq-marketing
 
-image: dovewallet-marketing
+image: dovewallethq/marketing
 
 
 registry:
