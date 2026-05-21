@@ -39,7 +39,7 @@ router.get("/go", (req: Request, res: Response): void => {
   // Validate override URLs to prevent open redirect abuse
   const allowedHosts = [
     "apps.apple.com",
-    "https://play.google.com/store/apps/details?id=com.mydove.app&pcampaignid=web_share",
+    "https://play.google.com/store/apps/details?id=com.mydove.app",
     "https://www.dovewallet.co/",
   ];
 
