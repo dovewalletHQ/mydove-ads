@@ -39,11 +39,13 @@ router.get("/go", (req: Request, res: Response): void => {
   // Validate override URLs to prevent open redirect abuse
   const allowedHosts = [
     "apps.apple.com",
-    "https://play.google.com/store/apps/details?id=com.mydove.app",
-    "https://www.dovewallet.co/",
+    "play.google.com",
+    "dovewallet.co",
+    "www.dovewallet.co"
   ];
 
-  function isSafeUrl(url: string): boolean {
+  function isSafeUrl(url: string | undefined): boolean {
+    if (!url) return false;
     try {
       const { hostname } = new URL(url);
       return allowedHosts.some((h) => hostname === h || hostname.endsWith(`.${h}`));
@@ -58,13 +60,13 @@ router.get("/go", (req: Request, res: Response): void => {
 
   const platform = detectPlatform(req);
 
-  const destinations: Record<typeof platform, string> = {
-    ios: resolvedIos,
-    android: resolvedAndroid,
+  const destinations: Record<typeof platform, string | undefined> = {
+    ios: resolvedIos || resolvedFallback,
+    android: resolvedAndroid || resolvedFallback,
     unknown: resolvedFallback,
   };
 
-  const destination = destinations[platform];
+  const destination = destinations[platform] || resolvedFallback || "/";
 
   // 302 (temporary) — never 301. A 301 gets cached by the browser and
   // will bypass this router on every subsequent click from that device.

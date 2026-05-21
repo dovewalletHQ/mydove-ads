@@ -15,12 +15,9 @@ function isIpadFromHints(req: Request): boolean {
     ?.replace(/"/g, "")
     .toLowerCase();
 
-  const mobile = req.headers["sec-ch-ua-mobile"] as string | undefined;
-
-  // "macOS" + ?0 (non-mobile) from an iPad is impossible to distinguish
-  // purely server-side in iOS 13+. Sending an Accept-Language or
-  // X-Requested-With hint from your app itself is the reliable fix.
-  return platform === "ios" || mobile === "?1";
+  // Android Chrome also sends mobile === "?1". 
+  // We only want to rely on the platform hint if it explicitly says "ios".
+  return platform === "ios";
 }
 
 export function detectPlatform(req: Request): DevicePlatform {
